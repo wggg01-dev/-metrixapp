@@ -1,0 +1,602 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: B2B SaaS Admin Dashboard API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: customers
+    description: Customer management
+  - name: users
+    description: Team user management
+  - name: analytics
+    description: Analytics and reporting
+  - name: revenue
+    description: Revenue and billing
+  - name: activity
+    description: Recent activity feed
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: status
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: plan
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerBody"
+      responses:
+        "201":
+          description: Created customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      tags: [customers]
+      summary: Get a customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCustomer
+      tags: [customers]
+      summary: Update a customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomerBody"
+      responses:
+        "200":
+          description: Updated customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCustomer
+      tags: [customers]
+      summary: Delete a customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List team members
+      responses:
+        "200":
+          description: List of team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamUser"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Invite a team member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserBody"
+      responses:
+        "201":
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamUser"
+
+  /users/{id}:
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a team member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserBody"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamUser"
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Remove a team member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /analytics/overview:
+    get:
+      operationId: getAnalyticsOverview
+      tags: [analytics]
+      summary: Get dashboard KPI overview
+      responses:
+        "200":
+          description: KPI summary metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsOverview"
+
+  /analytics/revenue-chart:
+    get:
+      operationId: getRevenueChart
+      tags: [analytics]
+      summary: Get monthly revenue chart data
+      parameters:
+        - in: query
+          name: months
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: Revenue chart data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RevenueDataPoint"
+
+  /analytics/customer-growth:
+    get:
+      operationId: getCustomerGrowth
+      tags: [analytics]
+      summary: Get customer growth chart data
+      responses:
+        "200":
+          description: Customer growth data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GrowthDataPoint"
+
+  /analytics/plan-distribution:
+    get:
+      operationId: getPlanDistribution
+      tags: [analytics]
+      summary: Get plan distribution breakdown
+      responses:
+        "200":
+          description: Plan distribution data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlanDistributionItem"
+
+  /revenue/invoices:
+    get:
+      operationId: listInvoices
+      tags: [revenue]
+      summary: List invoices
+      responses:
+        "200":
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invoice"
+
+  /activity:
+    get:
+      operationId: listActivity
+      tags: [activity]
+      summary: Get recent activity feed
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: Recent activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        company:
+          type: string
+        plan:
+          type: string
+          enum: [starter, pro, enterprise]
+        status:
+          type: string
+          enum: [active, churned, trial, suspended]
+        mrr:
+          type: number
+        joinedAt:
+          type: string
+          format: date-time
+        avatarUrl:
+          type: ["string", "null"]
+      required:
+        - id
+        - name
+        - email
+        - company
+        - plan
+        - status
+        - mrr
+        - joinedAt
+        - avatarUrl
+
+    CreateCustomerBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        company:
+          type: string
+        plan:
+          type: string
+          enum: [starter, pro, enterprise]
+        status:
+          type: string
+          enum: [active, churned, trial, suspended]
+        mrr:
+          type: number
+      required:
+        - name
+        - email
+        - company
+        - plan
+
+    UpdateCustomerBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        company:
+          type: string
+        plan:
+          type: string
+          enum: [starter, pro, enterprise]
+        status:
+          type: string
+          enum: [active, churned, trial, suspended]
+        mrr:
+          type: number
+
+    TeamUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, member, viewer]
+        status:
+          type: string
+          enum: [active, invited, suspended]
+        avatarUrl:
+          type: ["string", "null"]
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - role
+        - status
+        - avatarUrl
+        - joinedAt
+
+    CreateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, member, viewer]
+      required:
+        - name
+        - email
+        - role
+
+    UpdateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, member, viewer]
+        status:
+          type: string
+          enum: [active, invited, suspended]
+
+    AnalyticsOverview:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+        revenueGrowth:
+          type: number
+        activeCustomers:
+          type: integer
+        customerGrowth:
+          type: number
+        churnRate:
+          type: number
+        churnDelta:
+          type: number
+        avgRevenuePerUser:
+          type: number
+        arpuGrowth:
+          type: number
+        totalUsers:
+          type: integer
+        trialConversionRate:
+          type: number
+      required:
+        - totalRevenue
+        - revenueGrowth
+        - activeCustomers
+        - customerGrowth
+        - churnRate
+        - churnDelta
+        - avgRevenuePerUser
+        - arpuGrowth
+        - totalUsers
+        - trialConversionRate
+
+    RevenueDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        mrr:
+          type: number
+        arr:
+          type: number
+        newRevenue:
+          type: number
+        churnedRevenue:
+          type: number
+      required:
+        - month
+        - mrr
+        - arr
+        - newRevenue
+        - churnedRevenue
+
+    GrowthDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        total:
+          type: integer
+        new:
+          type: integer
+        churned:
+          type: integer
+      required:
+        - month
+        - total
+        - new
+        - churned
+
+    PlanDistributionItem:
+      type: object
+      properties:
+        plan:
+          type: string
+        count:
+          type: integer
+        revenue:
+          type: number
+        percentage:
+          type: number
+      required:
+        - plan
+        - count
+        - revenue
+        - percentage
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        customerName:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [paid, pending, overdue, refunded]
+        issuedAt:
+          type: string
+          format: date-time
+        dueAt:
+          type: string
+          format: date-time
+        plan:
+          type: string
+      required:
+        - id
+        - customerId
+        - customerName
+        - amount
+        - status
+        - issuedAt
+        - dueAt
+        - plan
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [customer_joined, customer_churned, plan_upgraded, plan_downgraded, invoice_paid, user_invited, invoice_overdue]
+        description:
+          type: string
+        entityName:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - type
+        - description
+        - entityName
+        - occurredAt
+        - metadata
