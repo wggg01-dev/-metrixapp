@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "B2B SaaS Admin Dashboard"
+title = "AML Dashboard Prototype"
 version = "1.0.0"
 id = "artifacts/admin-dashboard"
 router = "path"
