@@ -148,11 +148,11 @@ export default function AnalyticsRevenue() {
   const [showAllRecords, setShowAllRecords]   = useState(false);
   const [showAllExpenses, setShowAllExpenses] = useState(false);
 
-  const { data: overview, isLoading: overviewLoading } = useGetAnalyticsOverview();
-  const { data: revenueData, isLoading: revenueLoading } = useGetRevenueChart({ months: 12 });
-  const { data: growthData, isLoading: growthLoading } = useGetCustomerGrowth();
+  const { data: overview, isLoading: overviewLoading } = useGetAnalyticsOverview({ query: { refetchInterval: 30000 } });
+  const { data: revenueData, isLoading: revenueLoading } = useGetRevenueChart({ months: 12 }, { query: { refetchInterval: 30000 } });
+  const { data: growthData, isLoading: growthLoading } = useGetCustomerGrowth({ query: { refetchInterval: 30000 } });
   const { data: invoices, isLoading: invoicesLoading } = useListInvoices(
-    { query: { queryKey: getListInvoicesQueryKey() } }
+    { query: { queryKey: getListInvoicesQueryKey(), refetchInterval: 30000 } }
   );
 
   const filteredInvoices = invoices?.filter(inv =>
@@ -641,7 +641,7 @@ export default function AnalyticsRevenue() {
               className="gap-1.5 shrink-0"
               onClick={() => {
                 if (!invoices || invoices.length === 0) return;
-                const header = "Invoice ID,Customer,Amount,Issued,Due,Status";
+                const header = "Invoice ID,Student / Account,Amount,Issued,Due,Status";
                 const rows = filteredInvoices.map(inv =>
                   `"INV-${inv.id.toString().padStart(4, "0")}","${inv.customerName}",${inv.amount},"${format(new Date(inv.issuedAt), "MMM d yyyy")}","${format(new Date(inv.dueAt), "MMM d yyyy")}","${inv.status}"`
                 );
@@ -661,7 +661,7 @@ export default function AnalyticsRevenue() {
               <TableHeader>
                 <TableRow className="bg-muted/40">
                   <TableHead className="pl-6">Invoice ID</TableHead>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Student / Account</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Issued</TableHead>
                   <TableHead>Due</TableHead>

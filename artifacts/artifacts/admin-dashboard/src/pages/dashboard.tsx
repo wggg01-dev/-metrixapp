@@ -65,7 +65,7 @@ export default function Dashboard() {
   const [showAllTxn, setShowAllTxn] = useState(false);
   const [showAllActivity, setShowAllActivity] = useState(false);
 
-  const { data: users } = useListUsers({ query: { queryKey: getListUsersQueryKey() } });
+  const { data: users } = useListUsers({ query: { queryKey: getListUsersQueryKey(), refetchInterval: 30000 } });
 
   const activeStaff = Array.isArray(users) ? users.filter(u => u.status === "active").length : 0;
   const transactions = showAllTxn ? ALL_TRANSACTIONS : ALL_TRANSACTIONS.slice(0, 6);

@@ -15,7 +15,7 @@ export default function Revenue() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   
   const { data: invoices, isLoading } = useListInvoices(
-    { query: { queryKey: getListInvoicesQueryKey() } }
+    { query: { queryKey: getListInvoicesQueryKey(), refetchInterval: 30000 } }
   );
 
   const filteredInvoices = invoices?.filter(invoice => 
@@ -105,7 +105,7 @@ export default function Revenue() {
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead className="pl-6">Invoice ID</TableHead>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Student / Account</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Issued</TableHead>
                   <TableHead>Due</TableHead>

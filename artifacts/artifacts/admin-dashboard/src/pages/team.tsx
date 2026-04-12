@@ -94,7 +94,21 @@ type InviteValues = z.infer<typeof inviteSchema>;
 function StatusDot({ status }: { status: string }) {
   if (status === "active")
     return <span className="flex-shrink-0 w-2 h-2 rounded-full bg-emerald-500" title="Active" />;
+  if (status === "suspended")
+    return <span className="flex-shrink-0 w-2 h-2 rounded-full bg-rose-500" title="Inactive" />;
   return <span className="flex-shrink-0 w-2 h-2 rounded-full bg-amber-400" title="Pending" />;
+}
+
+function statusLabel(status: string) {
+  if (status === "active") return "Active";
+  if (status === "suspended") return "Inactive";
+  return "Pending";
+}
+
+function statusColor(status: string) {
+  if (status === "active") return "text-emerald-600 dark:text-emerald-400";
+  if (status === "suspended") return "text-rose-600 dark:text-rose-400";
+  return "text-amber-600 dark:text-amber-400";
 }
 
 export default function TeamManagement() {
@@ -102,7 +116,7 @@ export default function TeamManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useListUsers({ query: { queryKey: getListUsersQueryKey() } });
+  const { data: users, isLoading } = useListUsers({ query: { queryKey: getListUsersQueryKey(), refetchInterval: 30000 } });
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deleteUser = useDeleteUser();
@@ -143,8 +157,10 @@ export default function TeamManagement() {
     );
   };
 
-  const activeCount = users?.filter(u => u.status === "active").length ?? 0;
-  const totalCount  = users?.length ?? 0;
+  const activeCount   = users?.filter(u => u.status === "active").length ?? 0;
+  const pendingCount  = users?.filter(u => u.status === "invited").length ?? 0;
+  const inactiveCount = users?.filter(u => u.status === "suspended").length ?? 0;
+  const totalCount    = users?.length ?? 0;
 
   return (
     <div className="space-y-6">
@@ -252,13 +268,20 @@ export default function TeamManagement() {
       </div>
 
       {/* Stats row */}
-      <div className="flex items-center gap-6 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
         <span><span className="font-semibold text-foreground">{totalCount}</span> total members</span>
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span><span className="font-semibold text-foreground">{activeCount}</span> active</span>
+          <span><span className="font-semibold text-emerald-600 dark:text-emerald-400">{activeCount}</span> active</span>
         </span>
-        <span><span className="font-semibold text-foreground">{totalCount - activeCount}</span> pending</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-amber-400" />
+          <span><span className="font-semibold text-amber-600 dark:text-amber-400">{pendingCount}</span> pending</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-rose-500" />
+          <span><span className="font-semibold text-rose-600 dark:text-rose-400">{inactiveCount}</span> inactive</span>
+        </span>
       </div>
 
       {/* Team Cards Grid */}
@@ -333,8 +356,8 @@ export default function TeamManagement() {
                           </p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-[10px] font-medium ${user.status === "active" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
-                            {user.status === "active" ? "Active" : "Pending"}
+                          <span className={`text-[10px] font-medium ${statusColor(user.status)}`}>
+                            {statusLabel(user.status)}
                           </span>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
