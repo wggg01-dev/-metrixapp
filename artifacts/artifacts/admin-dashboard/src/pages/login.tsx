@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Eye, EyeOff, BarChart2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthLoading } from "@/components/auth-loading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MetrixAnimatedLogo } from "@/components/metrix-logo";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -50,14 +51,8 @@ export default function LoginPage() {
           style={{ background: "radial-gradient(circle, hsl(213,48%,58%), transparent 70%)" }} />
 
         {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-            style={{ background: "hsl(213,48%,58%)" }}>
-            <BarChart2 className="w-5 h-5" style={{ color: "hsl(222,30%,8%)" }} />
-          </div>
-          <span className="text-xl font-bold tracking-tight" style={{ color: "hsl(215,25%,92%)" }}>
-            Metrix
-          </span>
+        <div className="relative z-10">
+          <MetrixAnimatedLogo dark size="md" />
         </div>
 
         {/* Hero copy */}
@@ -94,11 +89,8 @@ export default function LoginPage() {
       {/* Right panel — form */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-background">
         {/* Mobile logo */}
-        <div className="flex md:hidden items-center gap-3 mb-10">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
-            <BarChart2 className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-bold tracking-tight">Metrix</span>
+        <div className="flex md:hidden mb-10">
+          <MetrixAnimatedLogo dark={false} size="md" />
         </div>
 
         <div className="w-full max-w-sm">

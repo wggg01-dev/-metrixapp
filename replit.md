@@ -89,6 +89,25 @@ All endpoints under `/api`:
 - `GET /api/analytics/overview`
 - `GET /api/activity`
 
+## UI / Branding
+
+### MetrixAnimatedLogo (`src/components/metrix-logo.tsx`)
+
+SVG bar-chart "M" shape with Framer Motion staggered animations:
+1. 5 bars grow from bottom → form the M silhouette (staggered, 0.09s apart)
+2. Line path traces across bar tops (delay 0.65s)
+3. Dots pop onto each bar top (delay 0.75s)
+4. "etrix" text fades in (delay 1.05s)
+
+Props: `dark` (boolean, default true), `size` (sm/md/lg), `className`.
+Used in `login.tsx` (dark left panel + light mobile header) and `sidebar.tsx`.
+
+### Pages & Features
+
+- **Team page** — StatusDot shows active (green), pending/invited (amber), inactive/suspended (red); stats row with counts
+- **Analytics / Revenue** — "Customer" column renamed to "Student / Account"
+- **All major queries** — `refetchInterval: 30000` (30s auto-refresh)
+
 ## Demo Credentials
 
 - Email: `admin@metrix.com`

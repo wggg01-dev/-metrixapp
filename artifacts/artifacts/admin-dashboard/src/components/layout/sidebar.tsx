@@ -5,13 +5,13 @@ import {
   LineChart,
   Settings,
   LogOut,
-  BarChart2,
   BookUser,
   ShoppingBag,
   Landmark,
   Bus,
   Megaphone,
 } from "lucide-react";
+import { MetrixAnimatedLogo } from "@/components/metrix-logo";
 import { cn } from "@/lib/utils";
 import {
   Sidebar as ShadcnSidebar,
@@ -44,12 +44,7 @@ export function AppSidebar() {
   return (
     <ShadcnSidebar variant="inset" collapsible="icon">
       <SidebarHeader className="h-16 flex items-center px-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5 font-bold text-lg text-sidebar-foreground">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary/20 border border-sidebar-primary/30">
-            <BarChart2 className="h-4 w-4 text-sidebar-primary" />
-          </div>
-          <span className="truncate tracking-tight">Metrix</span>
-        </div>
+        <MetrixAnimatedLogo dark={false} size="sm" />
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4">
