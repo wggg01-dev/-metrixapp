@@ -1,0 +1,8 @@
+[build]
+  base = "artifacts/artifacts/admin-dashboard"
+  command = "npm run build"
+  publish = "dist/public"
+
+[build.environment]
+  PORT = "8080"
+  BASE_PATH = "/"
