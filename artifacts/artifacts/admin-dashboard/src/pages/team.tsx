@@ -19,14 +19,10 @@ import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Plus, MoreHorizontal, Trash, Loader2, Users2, CreditCard, BookOpen,
-  Headphones, Shield, Mail,
+  Plus, Edit2, Trash, Loader2, Users2, CreditCard, BookOpen,
+  Headphones, Shield, Mail, Fingerprint, ShieldCheck,
 } from "lucide-react";
 
 const ROLE_CONFIG: Record<string, { label: string; team: string; teamId: string }> = {
@@ -113,6 +109,16 @@ function statusColor(status: string) {
 
 export default function TeamManagement() {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<any | null>(null);
+  const [editBuf, setEditBuf] = useState({ name: "", email: "", role: "manager", status: "active" });
+  const [editBioState, setEditBioState] = useState<"idle" | "scanning" | "done">("idle");
+
+  const [removeOpen, setRemoveOpen] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<any | null>(null);
+  const [removeBioState, setRemoveBioState] = useState<"idle" | "scanning" | "done">("idle");
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -144,17 +150,61 @@ export default function TeamManagement() {
     );
   };
 
-  const handleDelete = (id: number, name: string) => {
-    if (!confirm(`Remove ${name} from the team?`)) return;
-    deleteUser.mutate(
-      { id },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListUsersQueryKey() });
-          toast({ title: "Member removed", description: `${name} has been removed.` });
-        },
-      }
-    );
+  const openEdit = (user: any) => {
+    setEditBuf({ name: user.name, email: user.email, role: user.role, status: user.status });
+    setEditTarget(user);
+    setEditBioState("idle");
+    setEditOpen(true);
+  };
+
+  const confirmEdit = () => {
+    setEditBioState("scanning");
+    setTimeout(() => {
+      setEditBioState("done");
+      setTimeout(() => {
+        updateUser.mutate(
+          { id: editTarget.id, data: editBuf },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: getListUsersQueryKey() });
+              toast({ title: "Member updated", description: `${editBuf.name}'s details have been saved.` });
+              setEditOpen(false);
+              setEditBioState("idle");
+            },
+            onError: () => {
+              toast({ title: "Error", description: "Failed to update member.", variant: "destructive" });
+              setEditBioState("idle");
+            },
+          }
+        );
+      }, 600);
+    }, 1800);
+  };
+
+  const openRemove = (user: any) => {
+    setRemoveTarget(user);
+    setRemoveBioState("idle");
+    setRemoveOpen(true);
+  };
+
+  const confirmRemove = () => {
+    setRemoveBioState("scanning");
+    setTimeout(() => {
+      setRemoveBioState("done");
+      setTimeout(() => {
+        deleteUser.mutate(
+          { id: removeTarget.id },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: getListUsersQueryKey() });
+              toast({ title: "Member removed", description: `${removeTarget.name} has been removed from the team.` });
+              setRemoveOpen(false);
+              setRemoveBioState("idle");
+            },
+          }
+        );
+      }, 600);
+    }, 1800);
   };
 
   const activeCount   = users?.filter(u => u.status === "active").length ?? 0;
@@ -171,6 +221,10 @@ export default function TeamManagement() {
           <p className="text-muted-foreground mt-1">
             Manage departments, roles, and staff access across the school.
           </p>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium w-fit">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Restricted — Proprietor Only
+          </div>
         </div>
 
         <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
@@ -355,28 +409,28 @@ export default function TeamManagement() {
                             <span className="truncate">{user.email}</span>
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0">
                           <span className={`text-[10px] font-medium ${statusColor(user.status)}`}>
                             {statusLabel(user.status)}
                           </span>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreHorizontal className="h-3.5 w-3.5" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40">
-                              <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-destructive focus:text-destructive cursor-pointer text-xs"
-                                onClick={() => handleDelete(user.id, user.name)}
-                              >
-                                <Trash className="mr-2 h-3.5 w-3.5" />
-                                Remove Member
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Edit member"
+                            onClick={() => openEdit(user)}
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                            title="Remove member"
+                            onClick={() => openRemove(user)}
+                          >
+                            <Trash className="h-3 w-3" />
+                          </Button>
                         </div>
                       </div>
                     ))
@@ -395,6 +449,117 @@ export default function TeamManagement() {
           );
         })}
       </div>
+
+      {/* ── Edit Member Modal ── */}
+      <Dialog open={editOpen} onOpenChange={(o) => { if (!o) { setEditOpen(false); setEditBioState("idle"); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Team Member</DialogTitle>
+            <DialogDescription>Update details for {editTarget?.name}. Biometric authentication is required to save changes.</DialogDescription>
+          </DialogHeader>
+
+          {editBioState === "idle" && (
+            <div className="space-y-4 py-1">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Full Name</label>
+                <Input
+                  value={editBuf.name}
+                  onChange={(e) => setEditBuf(b => ({ ...b, name: e.target.value }))}
+                  placeholder="Jane Doe"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Email Address</label>
+                <Input
+                  value={editBuf.email}
+                  onChange={(e) => setEditBuf(b => ({ ...b, email: e.target.value }))}
+                  placeholder="jane@school.edu"
+                  type="email"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Role</label>
+                <Select value={editBuf.role} onValueChange={(v) => setEditBuf(b => ({ ...b, role: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Proprietor</SelectItem>
+                    <SelectItem value="manager">Admin</SelectItem>
+                    <SelectItem value="member">Accounts</SelectItem>
+                    <SelectItem value="viewer">Support</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Status</label>
+                <Select value={editBuf.status} onValueChange={(v) => setEditBuf(b => ({ ...b, status: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="invited">Pending</SelectItem>
+                    <SelectItem value="suspended">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {(editBioState === "scanning" || editBioState === "done") && (
+            <div className="flex flex-col items-center justify-center py-8 gap-4">
+              <div className={`relative flex items-center justify-center h-20 w-20 rounded-full ${editBioState === "done" ? "bg-emerald-500/10" : "bg-primary/10"}`}>
+                {editBioState === "scanning" && (
+                  <span className="absolute inset-0 rounded-full animate-ping bg-primary/20" />
+                )}
+                <Fingerprint className={`h-10 w-10 transition-colors ${editBioState === "done" ? "text-emerald-500" : "text-primary animate-pulse"}`} />
+              </div>
+              <p className="text-sm font-medium text-center">
+                {editBioState === "scanning" ? "Verifying identity… place your finger on the sensor" : "Identity confirmed — saving changes"}
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setEditOpen(false); setEditBioState("idle"); }} disabled={editBioState !== "idle"}>Cancel</Button>
+            <Button onClick={confirmEdit} disabled={editBioState !== "idle" || !editBuf.name || !editBuf.email}>
+              <Fingerprint className="h-4 w-4 mr-2" />
+              Authenticate & Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Remove Member Modal ── */}
+      <Dialog open={removeOpen} onOpenChange={(o) => { if (!o) { setRemoveOpen(false); setRemoveBioState("idle"); } }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Remove Team Member</DialogTitle>
+            <DialogDescription>
+              You are about to remove <span className="font-semibold text-foreground">{removeTarget?.name}</span> from the team. This action requires biometric confirmation.
+            </DialogDescription>
+          </DialogHeader>
+
+          {removeBioState !== "idle" && (
+            <div className="flex flex-col items-center justify-center py-6 gap-4">
+              <div className={`relative flex items-center justify-center h-20 w-20 rounded-full ${removeBioState === "done" ? "bg-emerald-500/10" : "bg-destructive/10"}`}>
+                {removeBioState === "scanning" && (
+                  <span className="absolute inset-0 rounded-full animate-ping bg-destructive/20" />
+                )}
+                <Fingerprint className={`h-10 w-10 transition-colors ${removeBioState === "done" ? "text-emerald-500" : "text-destructive animate-pulse"}`} />
+              </div>
+              <p className="text-sm font-medium text-center">
+                {removeBioState === "scanning" ? "Verifying identity… place your finger on the sensor" : "Identity confirmed — removing member"}
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setRemoveOpen(false); setRemoveBioState("idle"); }} disabled={removeBioState !== "idle"}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmRemove} disabled={removeBioState !== "idle"}>
+              <Fingerprint className="h-4 w-4 mr-2" />
+              Authenticate & Remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

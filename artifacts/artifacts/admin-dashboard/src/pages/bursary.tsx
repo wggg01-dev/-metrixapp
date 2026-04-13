@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Search, Filter, CreditCard, CheckCircle2, Clock, AlertCircle,
   Fingerprint, ShoppingCart, ChevronRight, Users, Plus, Minus, Wallet,
-  Download, Printer,
+  Download, Printer, ShieldCheck,
 } from "lucide-react";
 
 type PaymentStatus = "Paid" | "Pending" | "Part-payment";
@@ -570,12 +570,16 @@ export default function BursaryAccounts() {
       </Dialog>
 
       {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Bursary Accounts</h1>
           <p className="text-muted-foreground mt-1">
             Financial tracking, invoice management, and payment processing for all students.
           </p>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-400 text-xs font-medium w-fit">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Restricted — Bursary Accounts Only
+          </div>
         </div>
         <Button className="gap-2 self-start sm:self-auto" onClick={() => setPayOpen(true)}>
           <CreditCard className="h-4 w-4" />

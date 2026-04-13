@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import {
   Send, Mail, MessageSquare, Users, Clock, CheckCircle2,
-  Megaphone, CalendarDays, ChevronRight,
+  Megaphone, CalendarDays, ChevronRight, ShieldCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -106,6 +106,10 @@ export default function SupportDesk() {
           <p className="text-muted-foreground mt-1">
             Send mass email and SMS communications directly to parents, students, and stakeholders.
           </p>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium w-fit">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Restricted — Support Desk Only
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-medium">

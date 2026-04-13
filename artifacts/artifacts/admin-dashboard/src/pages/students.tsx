@@ -15,7 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   Search, FileText, Upload, ChevronDown, Receipt, Users, GraduationCap,
-  Phone, Mail, BookOpen, X, CheckCircle2,
+  Phone, Mail, BookOpen, X, CheckCircle2, ShieldCheck,
 } from "lucide-react";
 
 const CLASS_LEVELS = ["JSS 1", "JSS 2", "JSS 3", "SSS 1", "SSS 2", "SSS 3"];
@@ -145,6 +145,10 @@ export default function Students() {
           <p className="text-muted-foreground mt-1">
             Manage student records, enrolment status, and generate term invoices.
           </p>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium w-fit">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Restricted — Proprietor & Admin
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>

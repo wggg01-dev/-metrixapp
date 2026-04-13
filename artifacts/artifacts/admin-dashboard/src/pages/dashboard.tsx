@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowUpRight, ArrowDownRight, DollarSign, Clock, Wallet, TrendingUp,
   CreditCard, UserCheck, GraduationCap, AlertCircle, CheckCircle2,
-  ChevronRight, Users,
+  ChevronRight, Users, ShieldCheck,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -73,11 +73,17 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Your school's financial command center. Monitor payments and key metrics.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Your school's financial command center. Monitor payments and key metrics.
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium shrink-0">
+          <ShieldCheck className="h-4 w-4" />
+          Restricted — Proprietor Only
+        </div>
       </div>
 
       {/* Summary Cards */}

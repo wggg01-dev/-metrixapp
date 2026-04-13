@@ -11,7 +11,7 @@ import {
   CheckCircle2, Clock, RefreshCcw, Download, TrendingUp, TrendingDown,
   Wallet, AlertTriangle, ChevronRight, Bot, Zap, ShoppingCart,
   Lightbulb, SplitSquareHorizontal, CreditCard, Banknote, Landmark,
-  ArrowUpRight, ArrowDownRight, Receipt, CalendarDays,
+  ArrowUpRight, ArrowDownRight, Receipt, CalendarDays, ShieldCheck,
 } from "lucide-react";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -186,11 +186,17 @@ export default function AnalyticsRevenue() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Analytics & Revenue</h1>
-        <p className="text-muted-foreground mt-2">
-          Financial performance, payment trends, and billing records in one view.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Analytics & Revenue</h1>
+          <p className="text-muted-foreground mt-2">
+            Financial performance, payment trends, and billing records in one view.
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium shrink-0">
+          <ShieldCheck className="h-4 w-4" />
+          Restricted — Proprietor Only
+        </div>
       </div>
 
       {/* ─── Monthly Summary Cards ─── */}

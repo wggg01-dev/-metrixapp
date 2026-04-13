@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
-  Save, School, ShieldCheck, Bell, UserCog,
+  Save, School, ShieldCheck, Bell,
   BookOpen,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -221,36 +221,6 @@ export default function Settings() {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserCog className="h-4 w-4 text-muted-foreground" />
-                Role Access Control
-              </CardTitle>
-              <CardDescription>Define which roles can access restricted areas of the platform.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { role: "Proprietor",   access: ["All Modules", "Bus Pass Register", "Team Management", "Settings"] },
-                  { role: "Admin",        access: ["Dashboard", "Bursary Accounts", "Bus Pass Register", "Support Desk"] },
-                  { role: "Bursary",      access: ["Bursary Accounts", "School Store", "Analytics & Revenue"] },
-                  { role: "Staff",        access: ["Dashboard", "Student Directory"] },
-                ].map(({ role, access }) => (
-                  <div key={role} className="flex items-start gap-4 py-3 border-b border-border last:border-0">
-                    <div className="w-28 shrink-0">
-                      <span className="text-sm font-semibold">{role}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {access.map(a => (
-                        <Badge key={a} variant="outline" className="text-xs font-normal">{a}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* ── Notifications ── */}

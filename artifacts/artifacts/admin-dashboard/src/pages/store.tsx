@@ -11,7 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Trash2, Upload, Download, Search, Package, AlertTriangle,
-  TrendingUp, ShoppingBag, FileSpreadsheet, Filter, Edit2, Check, X, Fingerprint,
+  TrendingUp, ShoppingBag, FileSpreadsheet, Filter, Edit2, Check, X, Fingerprint, ShieldCheck,
 } from "lucide-react";
 
 type Category = "Textbook" | "Uniform" | "Tuition" | "Transport" | "Stationery" | "Other";
@@ -351,6 +351,10 @@ export default function SchoolStore() {
           <p className="text-muted-foreground mt-1">
             Manage items, fees, uniforms, and supplies available to students and parents.
           </p>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium w-fit">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Restricted — Proprietor Only
+          </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
