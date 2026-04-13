@@ -9,21 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
-  Save, School, ShieldCheck, Bell, CreditCard, Lock, Globe, UserCog,
-  GraduationCap, BookOpen, AlertCircle, Fingerprint,
+  Save, School, ShieldCheck, Bell, UserCog,
+  BookOpen,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const { toast } = useToast();
-  const [twoFA, setTwoFA] = useState(true);
-  const [biometric, setBiometric] = useState(true);
   const [receiptAuto, setReceiptAuto] = useState(true);
   const [notifNewEnrol, setNotifNewEnrol] = useState(true);
   const [notifFeeDefault, setNotifFeeDefault] = useState(true);
   const [notifWeekly, setNotifWeekly] = useState(true);
   const [notifPaySuccess, setNotifPaySuccess] = useState(true);
-  const [notifBusExpiry, setNotifBusExpiry] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +37,7 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="school" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[580px]">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[440px]">
           <TabsTrigger value="school" className="gap-1.5">
             <School className="h-3.5 w-3.5" />School
           </TabsTrigger>
@@ -49,9 +46,6 @@ export default function Settings() {
           </TabsTrigger>
           <TabsTrigger value="notifications" className="gap-1.5">
             <Bell className="h-3.5 w-3.5" />Notifications
-          </TabsTrigger>
-          <TabsTrigger value="licence" className="gap-1.5">
-            <CreditCard className="h-3.5 w-3.5" />Licence
           </TabsTrigger>
         </TabsList>
 
@@ -203,29 +197,9 @@ export default function Settings() {
                 <ShieldCheck className="h-4 w-4 text-primary" />
                 Access & Authentication
               </CardTitle>
-              <CardDescription>Control how staff members log in and authorize payments.</CardDescription>
+              <CardDescription>Control session behaviour for all staff accounts.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base flex items-center gap-1.5">
-                    <Lock className="h-3.5 w-3.5" />Two-Factor Authentication (2FA)
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Require OTP in addition to password for all staff logins.</p>
-                </div>
-                <Switch checked={twoFA} onCheckedChange={setTwoFA} />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base flex items-center gap-1.5">
-                    <Fingerprint className="h-3.5 w-3.5" />Biometric Payment Authorization
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Require biometric scan before any payment is processed in the Bursary.</p>
-                </div>
-                <Switch checked={biometric} onCheckedChange={setBiometric} />
-              </div>
-              <Separator />
               <div className="space-y-2">
                 <Label htmlFor="sessionTimeout">Session Timeout</Label>
                 <Select defaultValue="30">
@@ -292,10 +266,9 @@ export default function Settings() {
             <CardContent className="space-y-1">
               {[
                 { label: "New Student Enrolment", desc: "Get notified when a new student is added to the system.", state: notifNewEnrol, set: setNotifNewEnrol },
-                { label: "Fee Default Alert", desc: "Alert when a student's payment is overdue by 7+ days.", state: notifFeeDefault, set: setNotifFeeDefault },
+                { label: "Fee Default Alert", desc: "Alert when a student's payment is overdue by 7+ weeks.", state: notifFeeDefault, set: setNotifFeeDefault },
                 { label: "Weekly Summary Report", desc: "Receive a weekly summary of payments, enrolments, and activity.", state: notifWeekly, set: setNotifWeekly },
                 { label: "Payment Received", desc: "Confirm every successful fee payment with a system notification.", state: notifPaySuccess, set: setNotifPaySuccess },
-                { label: "Bus Pass Expiry Reminder", desc: "Notify parents 7 days before a student's bus pass expires.", state: notifBusExpiry, set: setNotifBusExpiry },
               ].map(({ label, desc, state, set }) => (
                 <div key={label} className="flex items-center justify-between py-4 border-b border-border last:border-0">
                   <div className="space-y-0.5 pr-8">
@@ -314,67 +287,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* ── Licence ── */}
-        <TabsContent value="licence" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-primary" />
-                Software Licence
-              </CardTitle>
-              <CardDescription>You are currently on the Institution Pro plan.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="rounded-lg border p-5 flex items-center justify-between bg-primary/5 border-primary/20">
-                <div>
-                  <h3 className="font-bold text-lg">Institution Pro</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">₦480,000 / year · Billed annually</p>
-                  <p className="text-xs text-muted-foreground mt-1">Renews: 1 September 2027</p>
-                </div>
-                <Badge className="bg-primary text-primary-foreground">Active</Badge>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">What's included</h4>
-                {[
-                  "Unlimited student records",
-                  "Bursary & fee management",
-                  "Bus Pass Register (anti-theft)",
-                  "Biometric payment authorization",
-                  "Support Desk (mass communications)",
-                  "Analytics & Revenue dashboard",
-                  "Priority support (24 h response)",
-                ].map(f => (
-                  <div key={f} className="flex items-center gap-2 text-sm">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    {f}
-                  </div>
-                ))}
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">Payment Method</h4>
-                <div className="flex items-center gap-4 rounded-lg border p-4">
-                  <div className="h-10 w-16 rounded bg-muted flex items-center justify-center font-bold text-xs border">VISA</div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">Visa ending in 4242</p>
-                    <p className="text-xs text-muted-foreground">Expires 12/2028</p>
-                  </div>
-                  <Button variant="outline" size="sm">Update Card</Button>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex gap-3">
-                <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-700 dark:text-amber-400">
-                  Renewing your licence 30 days before expiry qualifies you for a 5% loyalty discount. Contact your account manager for details.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );

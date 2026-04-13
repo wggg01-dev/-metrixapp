@@ -11,7 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Trash2, Upload, Download, Search, Package, AlertTriangle,
-  TrendingUp, ShoppingBag, FileSpreadsheet, Filter, Edit2, Check, X,
+  TrendingUp, ShoppingBag, FileSpreadsheet, Filter, Edit2, Check, X, Fingerprint,
 } from "lucide-react";
 
 type Category = "Textbook" | "Uniform" | "Tuition" | "Transport" | "Stationery" | "Other";
@@ -77,6 +77,10 @@ export default function SchoolStore() {
   const [editTarget, setEditTarget] = useState<StoreItem | null>(null);
   const [editBuf, setEditBuf]       = useState<Partial<StoreItem>>({});
 
+  const [biometricOpen, setBiometricOpen]       = useState(false);
+  const [biometricScanning, setBiometricScanning] = useState(false);
+  const [biometricDone, setBiometricDone]         = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast }    = useToast();
 
@@ -120,20 +124,35 @@ export default function SchoolStore() {
     toast({ title: "Item removed", description: `"${name}" was removed from the store.` });
   };
 
-  const addItem = () => {
+  const openBiometricForAdd = () => {
     if (!draft.name?.trim()) { toast({ title: "Name required", variant: "destructive" }); return; }
-    const newItem: StoreItem = {
-      id: Date.now().toString(),
-      name: draft.name.trim(),
-      category: (draft.category as Category) || "Other",
-      quantity: Number(draft.quantity) || 0,
-      price: Number(draft.price) || 0,
-      lowStockThreshold: Number(draft.lowStockThreshold) || 0,
-    };
-    setItems(prev => [...prev, newItem]);
-    setNewRow(false);
-    setDraft({ category: "Other", quantity: 0, price: 0, lowStockThreshold: 20 });
-    toast({ title: "Item added", description: `"${newItem.name}" added to the store.` });
+    setBiometricDone(false);
+    setBiometricScanning(false);
+    setBiometricOpen(true);
+  };
+
+  const confirmBiometricAdd = () => {
+    setBiometricScanning(true);
+    setTimeout(() => {
+      setBiometricScanning(false);
+      setBiometricDone(true);
+      setTimeout(() => {
+        const newItem: StoreItem = {
+          id: Date.now().toString(),
+          name: draft.name!.trim(),
+          category: (draft.category as Category) || "Other",
+          quantity: Number(draft.quantity) || 0,
+          price: Number(draft.price) || 0,
+          lowStockThreshold: Number(draft.lowStockThreshold) || 0,
+        };
+        setItems(prev => [...prev, newItem]);
+        setNewRow(false);
+        setDraft({ category: "Other", quantity: 0, price: 0, lowStockThreshold: 20 });
+        setBiometricOpen(false);
+        setBiometricDone(false);
+        toast({ title: "Item added", description: `"${newItem.name}" added to the store.` });
+      }, 700);
+    }, 1800);
   };
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,6 +202,60 @@ export default function SchoolStore() {
 
   return (
     <div className="space-y-8">
+
+      {/* ── Biometric Authorization Modal ── */}
+      <Dialog open={biometricOpen} onOpenChange={open => { if (!open && !biometricScanning) setBiometricOpen(false); }}>
+        <DialogContent className="sm:max-w-xs bg-white dark:bg-background text-center">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold tracking-tight text-center">Biometric Authorization</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground text-center">
+              Place your finger on the reader to authorize adding this item to the store.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center gap-5 py-4">
+            <div className={`relative flex items-center justify-center w-24 h-24 rounded-full border-2 transition-all duration-500 ${
+              biometricDone
+                ? "border-emerald-500 bg-emerald-500/10"
+                : biometricScanning
+                  ? "border-primary bg-primary/10 animate-pulse"
+                  : "border-border bg-muted"
+            }`}>
+              <Fingerprint className={`h-12 w-12 transition-colors duration-300 ${
+                biometricDone ? "text-emerald-500" : biometricScanning ? "text-primary" : "text-muted-foreground"
+              }`} />
+              {biometricScanning && (
+                <div className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" />
+              )}
+            </div>
+
+            <p className="text-sm font-medium">
+              {biometricDone
+                ? "Identity verified — adding item…"
+                : biometricScanning
+                  ? "Scanning… hold still"
+                  : "Ready to scan"}
+            </p>
+
+            {!biometricScanning && !biometricDone && (
+              <p className="text-xs text-muted-foreground -mt-2">
+                Adding: <span className="font-medium text-foreground">{draft.name || "—"}</span>
+              </p>
+            )}
+          </div>
+
+          <DialogFooter className="flex-row justify-center gap-2 pt-0">
+            {!biometricScanning && !biometricDone && (
+              <>
+                <Button variant="outline" onClick={() => setBiometricOpen(false)}>Cancel</Button>
+                <Button onClick={confirmBiometricAdd} className="gap-2">
+                  <Fingerprint className="h-4 w-4" />Authorize
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ── Edit Record Modal ── */}
       <Dialog open={editOpen} onOpenChange={open => { if (!open) handleCancelEdit(); }}>
@@ -459,8 +532,8 @@ export default function SchoolStore() {
                     <td className="px-4 py-2.5 text-right text-muted-foreground text-xs">—</td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center justify-center gap-1">
-                        <Button size="sm" className="h-7 px-3 text-xs gap-1" onClick={addItem}>
-                          <Check className="h-3.5 w-3.5" /> Save
+                        <Button size="sm" className="h-7 px-3 text-xs gap-1" onClick={openBiometricForAdd}>
+                          <Fingerprint className="h-3.5 w-3.5" /> Authorize & Save
                         </Button>
                         <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setNewRow(false)}>
                           <X className="h-3.5 w-3.5" />

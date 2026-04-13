@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Search, Download, Bus, Users, CheckCircle2, Printer, CalendarDays, ShieldCheck,
+  Search, Bus, Users, CheckCircle2, Printer, CalendarDays, ShieldCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -97,16 +97,6 @@ export default function BusPassDashboard() {
 
   const visible = showAll ? filtered : filtered.slice(0, 8);
 
-  const exportCSV = () => {
-    const header = "Pass ID,Student Name,Student ID,Class,Bus Route,Payment Date,Valid Until,Parent Phone";
-    const rows = BUS_PASS_DATA.map(e =>
-      `"${e.passId}","${e.studentName}","${e.studentId}","${e.classArm}","${e.busRoute}","${e.paymentDate}","${e.validUntil}","${e.parentPhone}"`
-    );
-    const blob = new Blob([[header, ...rows].join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "bus-pass-register.csv"; a.click(); URL.revokeObjectURL(url);
-  };
-
   const routeCounts = BUS_PASS_DATA.reduce<Record<string, number>>((acc, e) => {
     const r = e.busRoute.split("—")[0].trim();
     acc[r] = (acc[r] ?? 0) + 1;
@@ -189,21 +179,15 @@ export default function BusPassDashboard() {
         </Card>
       </div>
 
-      {/* ── Search + Export ── */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by student name, ID, or bus route…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Button variant="outline" className="gap-2 shrink-0" onClick={exportCSV}>
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
+      {/* ── Search ── */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by student name, ID, or bus route…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {/* ── Bus Pass Table ── */}
