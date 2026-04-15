@@ -13,12 +13,36 @@ const ADMIN_EMAIL = "admin@metrix.com";
 const ADMIN_PASSWORD = "admin123";
 const AUTH_STORAGE_KEY = "nexus-auth";
 
+function safeGetStorage(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSetStorage(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // localStorage unavailable
+  }
+}
+
+function safeRemoveStorage(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    const stored = safeGetStorage(AUTH_STORAGE_KEY);
     if (stored === "true") {
       setIsAuthenticated(true);
     }
@@ -31,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
       password === ADMIN_PASSWORD
     ) {
-      localStorage.setItem(AUTH_STORAGE_KEY, "true");
+      safeSetStorage(AUTH_STORAGE_KEY, "true");
       setIsAuthenticated(true);
       return { success: true };
     }
@@ -39,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    safeRemoveStorage(AUTH_STORAGE_KEY);
     setIsAuthenticated(false);
   };
 
