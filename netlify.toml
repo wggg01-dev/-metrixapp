@@ -1,4 +1,4 @@
 [build]
-  base = "artifacts/admin-dashboard"
+  # Leave base empty if you set it in the Netlify UI
   command = "npm run build"
-  publish = "dist"
+  publish = "dist" 
