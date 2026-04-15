@@ -1,7 +1,7 @@
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-// Import your other plugins here...
+import tailwindcss from "@tailwindcss/vite"; // <-- Tailwind imported here
 
 // Define this outside the config for clarity
 const replitPlugins = (process.env.REPL_ID && process.env.NODE_ENV !== "production")
@@ -12,10 +12,10 @@ const replitPlugins = (process.env.REPL_ID && process.env.NODE_ENV !== "producti
   : [];
 
 export default defineConfig({
-  base: "./",
+  base: "/",
   plugins: [
     react(),
-    // add your tailwind and runtime plugins here
+    tailwindcss(), // <-- Tailwind activated here
     ...replitPlugins,
   ],
   resolve: {
