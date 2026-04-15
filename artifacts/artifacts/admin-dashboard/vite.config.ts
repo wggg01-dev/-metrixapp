@@ -12,7 +12,7 @@ const replitPlugins = (process.env.REPL_ID && process.env.NODE_ENV !== "producti
   : [];
 
 export default defineConfig({
-  base: "/",
+  base: "./",
   plugins: [
     react(),
     // add your tailwind and runtime plugins here
