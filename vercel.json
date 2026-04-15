@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install -g pnpm && pnpm install && pnpm --filter @workspace/admin-dashboard run build",
+  "buildCommand": "pnpm install && pnpm --filter @workspace/admin-dashboard run build",
   "outputDirectory": "artifacts/artifacts/admin-dashboard/dist",
   "framework": null,
   "rewrites": [
