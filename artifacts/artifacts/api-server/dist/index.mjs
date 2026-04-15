@@ -61597,6 +61597,7 @@ var logger = (0, import_pino.default)({
 // src/app.ts
 var app = (0, import_express8.default)();
 app.use(
+  // @ts-ignore
   (0, import_pino_http.default)({
     logger,
     serializers: {
