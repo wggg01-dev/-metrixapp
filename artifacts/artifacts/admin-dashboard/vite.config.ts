@@ -31,14 +31,8 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: Number(process.env.PORT) || 8080,
+    port: Number(process.env.VITE_PORT) || 3000,
     host: "0.0.0.0",
     allowedHosts: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:8088",
-        changeOrigin: true,
-      },
-    },
   },
 });
