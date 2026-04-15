@@ -11,8 +11,8 @@ A full-stack B2B SaaS Admin Dashboard built as a pnpm monorepo. Features a React
 ## Monorepo Structure
 ```
 artifacts/artifacts/
-  admin-dashboard/   # React + Vite frontend (port 3000 in dev)
-  api-server/        # Express API server (port 5000, proxies to Vite)
+  admin-dashboard/   # React + Vite frontend (port 3002 in dev)
+  api-server/        # Express API server (port 5000, proxies to Vite in dev / serves static in prod)
   mockup-sandbox/    # UI component sandbox
 lib/lib/
   db/                # Drizzle ORM schema + PostgreSQL client
@@ -22,23 +22,36 @@ lib/lib/
 artifacts/lib        # Symlink to lib/lib/ for TypeScript project references
 ```
 
-## Running the Project
+## Running the Project (Development)
 The app starts with `bash start.sh` which:
 1. Installs dependencies if needed
 2. Pushes DB schema with Drizzle
-3. Starts Vite dev server on port 3000 (background)
+3. Starts Vite dev server on port 3002 (background) — uses port 3002 to avoid conflicts with artifact workflows
 4. Builds and starts Express API server on port 5000
 
-The API server on port 5000 handles `/api` routes and proxies all other traffic to Vite on port 3000.
+The API server on port 5000 handles `/api` routes and proxies all other traffic to Vite on port 3002.
+
+## Production Build & Deployment
+Run `bash build.sh` to:
+1. Install dependencies
+2. Build frontend with Vite → `artifacts/artifacts/admin-dashboard/dist/`
+3. Build API server with esbuild → `artifacts/artifacts/api-server/dist/`
+4. Push DB schema
+
+In production (`NODE_ENV=production`), the Express server serves built static files from
+`admin-dashboard/dist/` instead of proxying to Vite.
+
+Production run command: `PORT=5000 NODE_ENV=production pnpm --filter @workspace/api-server run start`
 
 ## Key Ports
-- **5000**: Express API server (Replit webview port)
-- **3000**: Vite dev server (internal)
+- **5000**: Express API server (Replit webview port / production port)
+- **3002**: Vite dev server (internal, development only)
 
 ## Environment Variables
 - `DATABASE_URL` + `PG*` variables: Set automatically by Replit PostgreSQL database
-- `PORT`: API server port (set to 5000 in workflow)
-- `VITE_PORT`: Vite dev server port (set to 3000 in workflow)
+- `PORT`: API server port (set to 5000)
+- `VITE_PORT`: Vite dev server port (set to 3002 in development)
+- `NODE_ENV`: Set to `production` for production builds
 
 ## Database
 Uses Replit's built-in PostgreSQL. Schema managed via Drizzle ORM.
