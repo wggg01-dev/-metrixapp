@@ -10,16 +10,16 @@ localPort = 3001
 externalPort = 3001
 
 [[ports]]
-localPort = 8080
-externalPort = 8080
-
-[[ports]]
-localPort = 8081
-externalPort = 8081
+localPort = 3002
+externalPort = 3002
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
 
 [agent]
 expertMode = true
@@ -45,5 +45,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bash -i start.sh"
+args = "pnpm --filter @workspace/admin-dashboard run dev --port 5000"
 waitForPort = 5000
