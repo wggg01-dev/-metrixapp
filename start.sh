@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source Replit environment so pnpm/node are available
+source ~/.bashrc 2>/dev/null || true
+
 # Install dependencies if needed
 if [ ! -d "node_modules" ] || [ ! -d "artifacts/artifacts/admin-dashboard/node_modules" ]; then
   pnpm install
