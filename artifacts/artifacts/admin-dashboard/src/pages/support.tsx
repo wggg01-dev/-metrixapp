@@ -72,6 +72,7 @@ export default function SupportDesk() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [history, setHistory] = useState<BroadcastLog[]>(BROADCAST_HISTORY);
   const { toast } = useToast();
 
   const audienceInfo = AUDIENCE_LABELS[audience];
@@ -83,16 +84,28 @@ export default function SupportDesk() {
   const handleSend = () => {
     setSending(true);
     setTimeout(() => {
+      const recipients = audienceInfo?.count ?? 0;
+      const newLog: BroadcastLog = {
+        id: `MSG-${String(history.length + 1).padStart(3, "0")}`,
+        type: messageType as "Email" | "SMS",
+        audience,
+        subject: messageType === "Email" ? subject : undefined,
+        preview: body,
+        sentAt: new Date().toISOString(),
+        recipients,
+        status: "Delivered",
+      };
+      setHistory(prev => [newLog, ...prev]);
       setSending(false);
       toast({
         title: `${messageType} broadcast sent ✓`,
-        description: `Message delivered to ${audienceInfo?.count ?? 0} recipient${(audienceInfo?.count ?? 0) === 1 ? "" : "s"} (${audience}).`,
+        description: `Message delivered to ${recipients} recipient${recipients === 1 ? "" : "s"} (${audience}).`,
       });
       setAudience(""); setMessageType(""); setSubject(""); setBody("");
     }, 2000);
   };
 
-  const visibleHistory = showAll ? BROADCAST_HISTORY : BROADCAST_HISTORY.slice(0, 3);
+  const visibleHistory = showAll ? history : history.slice(0, 3);
 
   return (
     <div className="space-y-8">
@@ -129,7 +142,7 @@ export default function SupportDesk() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{BROADCAST_HISTORY.length}</div>
+            <div className="text-2xl font-bold">{history.length}</div>
             <p className="text-xs text-muted-foreground mt-1">Total broadcasts this term</p>
           </CardContent>
         </Card>
@@ -142,7 +155,7 @@ export default function SupportDesk() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {BROADCAST_HISTORY.reduce((s, m) => s + m.recipients, 0).toLocaleString()}
+              {history.reduce((s, m) => s + m.recipients, 0).toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Across all broadcasts</p>
           </CardContent>
@@ -355,7 +368,7 @@ export default function SupportDesk() {
               </CardTitle>
               <CardDescription>A history of all mass messages sent this term.</CardDescription>
             </div>
-            <Badge variant="outline" className="text-xs">{BROADCAST_HISTORY.length} total</Badge>
+            <Badge variant="outline" className="text-xs">{history.length} total</Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -406,14 +419,14 @@ export default function SupportDesk() {
               </div>
             ))}
           </div>
-          {BROADCAST_HISTORY.length > 3 && (
+          {history.length > 3 && (
             <div className="px-6 py-3 border-t border-border">
               <Button
                 variant="ghost" size="sm"
                 className="text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-3"
                 onClick={() => setShowAll(prev => !prev)}
               >
-                {showAll ? "Show less" : `See all ${BROADCAST_HISTORY.length} broadcasts`}
+                {showAll ? "Show less" : `See all ${history.length} broadcasts`}
                 <ChevronRight className={`h-3.5 w-3.5 transition-transform ${showAll ? "rotate-90" : ""}`} />
               </Button>
             </div>

@@ -1,3 +1,5 @@
+import { handleMockApiRequest } from "./mock-api";
+
 export type CustomFetchOptions = RequestInit & {
   responseType?: "json" | "text" | "blob" | "auto";
 };
@@ -360,7 +362,8 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  const mockResponse = await handleMockApiRequest(input, { ...init, method, headers });
+  const response = mockResponse ?? await fetch(input, { ...init, method, headers });
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);
