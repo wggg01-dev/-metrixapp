@@ -40,8 +40,8 @@ start_vite() {
 # Start API server with auto-restart (rebuilds on each restart to pick up any changes)
 start_api() {
   while true; do
-    echo "[start.sh] Building and starting API server on port 8080..."
-    VITE_PORT=3002 PORT=8080 pnpm --filter @workspace/api-server run dev &
+    echo "[start.sh] Building and starting API server on port 5000..."
+    VITE_PORT=3002 PORT=5000 pnpm --filter @workspace/api-server run dev &
     API_PID=$!
     wait "$API_PID" 2>/dev/null
     EXIT_CODE=$?
