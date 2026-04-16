@@ -8,54 +8,29 @@ if [ ! -d "node_modules" ] || [ ! -d "artifacts/artifacts/admin-dashboard/node_m
   pnpm install
 fi
 
-# Push database schema
-pnpm --filter @workspace/db run push || true
-
-# Cleanup function — kill all child processes on exit
+# Cleanup function — kill frontend process on exit
 cleanup() {
   echo "Shutting down..."
-  kill "$VITE_PID" 2>/dev/null || true
-  kill "$API_PID" 2>/dev/null || true
+  kill "$APP_PID" 2>/dev/null || true
   exit 0
 }
 trap cleanup SIGTERM SIGINT
 
-# Start Vite dev server with auto-restart
-start_vite() {
+# Start frontend app with auto-restart
+start_app() {
   while true; do
-    echo "[start.sh] Starting Vite dev server on port 3002..."
-    VITE_PORT=3002 PORT=3002 pnpm --filter @workspace/admin-dashboard run dev &
-    VITE_PID=$!
-    wait "$VITE_PID" 2>/dev/null
+    echo "[start.sh] Starting frontend app on port 8080..."
+    VITE_PORT=8080 PORT=8080 pnpm --filter @workspace/admin-dashboard run dev &
+    APP_PID=$!
+    wait "$APP_PID" 2>/dev/null
     EXIT_CODE=$?
     if [ "$EXIT_CODE" -eq 0 ] || [ "$EXIT_CODE" -eq 130 ] || [ "$EXIT_CODE" -eq 143 ]; then
-      echo "[start.sh] Vite exited cleanly."
+      echo "[start.sh] Frontend app exited cleanly."
       break
     fi
-    echo "[start.sh] Vite crashed (exit $EXIT_CODE). Restarting in 2s..."
+    echo "[start.sh] Frontend app crashed (exit $EXIT_CODE). Restarting in 2s..."
     sleep 2
   done
 }
 
-# Start API server with auto-restart (rebuilds on each restart to pick up any changes)
-start_api() {
-  while true; do
-    echo "[start.sh] Building and starting API server on port 8080..."
-    VITE_PORT=3002 PORT=8080 pnpm --filter @workspace/api-server run dev &
-    API_PID=$!
-    wait "$API_PID" 2>/dev/null
-    EXIT_CODE=$?
-    if [ "$EXIT_CODE" -eq 0 ] || [ "$EXIT_CODE" -eq 130 ] || [ "$EXIT_CODE" -eq 143 ]; then
-      echo "[start.sh] API server exited cleanly."
-      break
-    fi
-    echo "[start.sh] API server crashed (exit $EXIT_CODE). Restarting in 2s..."
-    sleep 2
-  done
-}
-
-start_vite &
-start_api &
-
-# Wait for both background loops to finish
-wait
+start_app

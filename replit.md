@@ -1,21 +1,18 @@
 # Metrix - B2B SaaS Admin Dashboard
 
 ## Overview
-A full-stack B2B SaaS Admin Dashboard built as a pnpm monorepo. Features a React frontend and Express backend with PostgreSQL database.
+A B2B SaaS Admin Dashboard frontend built as a pnpm workspace. The app runs directly with Vite on port 8080.
 
 ## Architecture
 - **Frontend**: React 19 + Vite 6 + TailwindCSS 4 + Shadcn/UI (Radix UI) + Recharts + Framer Motion + Wouter
-- **Backend**: Express 5 + Drizzle ORM + PostgreSQL
-- **Shared Libraries**: API spec (OpenAPI), Zod validators, React Query hooks, DB schema
+- **Shared Libraries**: API spec, Zod validators, React Query hooks
 
 ## Monorepo Structure
 ```
 artifacts/artifacts/
-  admin-dashboard/   # React + Vite frontend (port 3002 in dev)
-  api-server/        # Express API server (port 5000, proxies to Vite in dev / serves static in prod)
+  admin-dashboard/   # React + Vite frontend (port 8080)
   mockup-sandbox/    # UI component sandbox
 lib/lib/
-  db/                # Drizzle ORM schema + PostgreSQL client
   api-spec/          # OpenAPI spec + Orval codegen config
   api-zod/           # Generated Zod schemas
   api-client-react/  # Generated React Query hooks
@@ -25,37 +22,20 @@ artifacts/lib        # Symlink to lib/lib/ for TypeScript project references
 ## Running the Project (Development)
 The app starts with `bash start.sh` which:
 1. Installs dependencies if needed
-2. Pushes DB schema with Drizzle
-3. Starts Vite dev server on port 3002 (background) — uses port 3002 to avoid conflicts with artifact workflows
-4. Builds and starts Express API server on port 8080
-
-The API server on port 8080 handles `/api` routes and proxies all other traffic to Vite on port 3002.
+2. Starts the Vite frontend app directly on port 8080
 
 ## Production Build & Deployment
 Run `bash build.sh` to:
 1. Install dependencies
 2. Build frontend with Vite → `artifacts/artifacts/admin-dashboard/dist/`
-3. Build API server with esbuild → `artifacts/artifacts/api-server/dist/`
-4. Push DB schema
-
-In production (`NODE_ENV=production`), the Express server serves built static files from
-`admin-dashboard/dist/` instead of proxying to Vite.
-
-Production run command: `PORT=8080 NODE_ENV=production pnpm --filter @workspace/api-server run start`
 
 ## Key Ports
-- **8080**: Express API server (application port / production port)
-- **3002**: Vite dev server (internal, development only)
+- **8080**: Vite frontend app
 
 ## Environment Variables
-- `DATABASE_URL` + `PG*` variables: Set automatically by Replit PostgreSQL database
-- `PORT`: API server port (set to 5000)
-- `VITE_PORT`: Vite dev server port (set to 3002 in development)
+- `PORT`: App port (set to 8080 by `start.sh`)
+- `VITE_PORT`: Vite dev server port (set to 8080 by `start.sh`)
 - `NODE_ENV`: Set to `production` for production builds
-
-## Database
-Uses Replit's built-in PostgreSQL. Schema managed via Drizzle ORM.
-Run schema push: `pnpm --filter @workspace/db run push`
 
 ## Package Management
 Uses pnpm workspaces with catalog feature for centralized version management.
