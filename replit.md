@@ -27,9 +27,9 @@ The app starts with `bash start.sh` which:
 1. Installs dependencies if needed
 2. Pushes DB schema with Drizzle
 3. Starts Vite dev server on port 3002 (background) — uses port 3002 to avoid conflicts with artifact workflows
-4. Builds and starts Express API server on port 5000
+4. Builds and starts Express API server on port 8080
 
-The API server on port 5000 handles `/api` routes and proxies all other traffic to Vite on port 3002.
+The API server on port 8080 handles `/api` routes and proxies all other traffic to Vite on port 3002.
 
 ## Production Build & Deployment
 Run `bash build.sh` to:
@@ -41,10 +41,10 @@ Run `bash build.sh` to:
 In production (`NODE_ENV=production`), the Express server serves built static files from
 `admin-dashboard/dist/` instead of proxying to Vite.
 
-Production run command: `PORT=5000 NODE_ENV=production pnpm --filter @workspace/api-server run start`
+Production run command: `PORT=8080 NODE_ENV=production pnpm --filter @workspace/api-server run start`
 
 ## Key Ports
-- **5000**: Express API server (Replit webview port / production port)
+- **8080**: Express API server (application port / production port)
 - **3002**: Vite dev server (internal, development only)
 
 ## Environment Variables
